@@ -21,6 +21,8 @@ $(function () {
   //
   // TODO: Add code to display the current date in the header of the page.
   $(document).ready(function () {
+
+    $("#currentDay").html(dayjs().format('dddd, MMMM D'));
     var hours = [
       "8AM",
       "9AM",
@@ -44,7 +46,7 @@ $(function () {
       savedData = new Array();
     }
 
-    var currentHour = dayjs().hour();
+    var currentHour = dayjs().format('h');
     var amPm = dayjs().format("a").toUpperCase();
 
     //this is a loop in jquery
@@ -56,11 +58,17 @@ $(function () {
       var currentAmPm = time.replace(/[0-9]+/g, '');
     
       if((loopTime < currentTime) && (currentAmPm === amPm)) {
-        pastCurrentOrPresent = "future";
-      } else if (currentTime == loopTime && (currentAmPm === amPm)) {
+        pastCurrentOrPresent = "past";
+      } else if ((currentTime == loopTime) && (currentAmPm === amPm)) {
         pastCurrentOrPresent = "present";
-      } else if (currentTime > loopTime && (currentAmPm === amPm)) {
+      } else if ((loopTime > currentTime) && (currentAmPm === amPm) && (loopTime!==12)) {
         pastCurrentOrPresent = "future";
+      } else if (loopTime == 12) {
+        if (currentAmPm == 'AM') {
+          pastCurrentOrPresent = 'future';
+        } else {
+          pastCurrentOrPresent = 'past';
+        }
       } else {
         pastCurrentOrPresent = "past";
       }
@@ -82,13 +90,9 @@ $(function () {
     $(".saveBtn").on('click', function(e) {
       e.preventDefault();
       var currentIndex = parseInt($(e.currentTarget).parent().attr('id').replace("hour-", ""));
-      console.log(currentIndex);
       var divName = $(e.currentTarget).siblings('.hour').html();
       var enteredText = $(e.currentTarget).siblings("textarea").val();
-      console.log(divName);
-      console.log(enteredText);
       savedData[currentIndex] = enteredText;
-      console.log(JSON.stringify(savedData));
       localStorage.setItem("calendar", JSON.stringify(savedData));
     });
     });
